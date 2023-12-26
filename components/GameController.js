@@ -1,30 +1,42 @@
 'use client'
 import { useState, useEffect } from 'react';
-import prizes from './prizes';
+import {chrisPrizes, lyssiPrizes} from './prizes';
 import GameBoard from '../components/GameBoard';
+import PlayerSelectionModal from '../components/PlayerSelectionModal';
 import Registry from '../components/Registry';
 
 export default function GameController() {
   const [selectedCases, setSelectedCases] = useState([]);
   const [cases, setCases] = useState([]);
+  const [player, setPlayer] = useState(null);
 
   // Initialize the game
   useEffect(() => {
-  const cases = prizes.map((prize, index) => {
-    return {
-      id: index,
-      caseNumber: index + 1,
-      prize: prize,
-      isOpen: false
-    };
-  });
+    if (!player) {
+        return;
+    }
+    let prizes;
+    if (player === 'chris') { 
+        prizes = chrisPrizes;
+    } else if (player === 'lyssi') {
+        prizes = lyssiPrizes;
+    }
+
+    const cases = prizes.map((prize, index) => {
+        return {
+        id: index,
+        caseNumber: index + 1,
+        prize: prize,
+        isOpen: false
+        };
+    });
 
   // Shuffle the cases to randomize the prizes
-  cases.sort(() => Math.random() - 0.5);
+    cases.sort(() => Math.random() - 0.5);
 
-  // Set the state
-  setCases(cases);
-}, []);
+    // Set the state
+    setCases(cases);
+    }, [player]);
 
   // Handle case selection
 const handleCaseSelect = (selectedCase) => {
@@ -48,6 +60,7 @@ const handleCaseSelect = (selectedCase) => {
 
   return (
     <div className="flex justify-between">
+    <PlayerSelectionModal onPlayerSelect={setPlayer} />
         <Registry cases={cases.slice(0,20)}/>
     <GameBoard 
       cases={cases} 
